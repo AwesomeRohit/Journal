@@ -28,7 +28,7 @@ public class JournalEntryService {
             JournalEntry saved = journalEntryRepository.save(journalEntry);
             user.getJournalEntries().add(saved);
             user.setJournalEntries(user.getJournalEntries());
-            userService.saveAll(user);
+            userService.saveEntry(user);
         } catch (Exception e) {
            System.out.println("Error saving journal entry: " + e.getMessage());
            e.printStackTrace();
@@ -55,7 +55,7 @@ public class JournalEntryService {
         JournalEntry journalEntry = journalEntryRepository.findById(id).orElse(null);
         if (journalEntry != null) {
             user.getJournalEntries().remove(journalEntry);
-            userService.saveAll(user);
+            userService.saveEntry(user);
             journalEntryRepository.deleteById(id);
         }
         
