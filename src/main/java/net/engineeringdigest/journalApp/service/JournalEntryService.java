@@ -21,14 +21,14 @@ public class JournalEntryService {
     UserService userService;
     
     @Transactional
-    public void saveAll(JournalEntry journalEntry, String username){
+    public void saveEntry(JournalEntry journalEntry, String username){
         try {
             User user = userService.findByUserName(username);
             journalEntryRepository.save(journalEntry);
             JournalEntry saved = journalEntryRepository.save(journalEntry);
             user.getJournalEntries().add(saved);
             user.setJournalEntries(user.getJournalEntries());
-            userService.saveEntry(user);
+            userService.saveUser(user);
         } catch (Exception e) {
            System.out.println("Error saving journal entry: " + e.getMessage());
            e.printStackTrace();
@@ -55,7 +55,7 @@ public class JournalEntryService {
         JournalEntry journalEntry = journalEntryRepository.findById(id).orElse(null);
         if (journalEntry != null) {
             user.getJournalEntries().remove(journalEntry);
-            userService.saveEntry(user);
+            userService.saveNewEntry(user);
             journalEntryRepository.deleteById(id);
         }
         
