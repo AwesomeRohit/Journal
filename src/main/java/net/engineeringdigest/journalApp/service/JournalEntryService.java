@@ -50,13 +50,21 @@ public class JournalEntryService {
         return Optional.ofNullable(journalEntryRepository.findById(id).orElse(null));
     }
     
+    @Transactional
     public void deleteById(String username, ObjectId id){
-        User user = userService.findByUserName(username);
-        JournalEntry journalEntry = journalEntryRepository.findById(id).orElse(null);
-        if (journalEntry != null) {
-            user.getJournalEntries().remove(journalEntry);
-            userService.saveNewEntry(user);
-            journalEntryRepository.deleteById(id);
+        
+        try {
+            User user = userService.findByUserName(username);
+        boolean removed = user.getJournalEntries().removeIf( x -> x.getId().equals(id));
+        if (!removed) {
+            System.out.println("Journal entry not found in user's journal entries.");
+        }
+        user.setJournalEntries(user.getJournalEntries());
+        userService.saveUser(user);
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            throw new RuntimeException("Error deleting journal entry: " + e.getMessage());
         }
         
     }
